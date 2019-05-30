@@ -1,23 +1,23 @@
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
+using Android.Graphics;
+using Android.Media;
 using Android.OS;
+using Firebase.Iid;
 using Plugin.PushNotification.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Android.Content.PM;
-using System.Collections.ObjectModel;
-using Android.Graphics;
-using Firebase.Iid;
 
 namespace Plugin.PushNotification
 {
-  /// <summary>
-  /// Implementation for Feature
-  /// </summary>
-  public class PushNotificationManager : IPushNotification
-  {
+    /// <summary>
+    /// Implementation for Feature
+    /// </summary>
+    public class PushNotificationManager : IPushNotification
+    {
         //internal static PushNotificationActionReceiver ActionReceiver = null;
         static NotificationResponse delayedNotificationResponse = null;
         internal const string KeyGroupName = "Plugin.PushNotification";
@@ -36,6 +36,7 @@ namespace Plugin.PushNotification
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
         public static string DefaultNotificationChannelName { get; set; } = "General";
+        public static string DefaultNotificationChannelSound { get; set; } = "default";
 
         internal static Type DefaultNotificationActivityType { get; set; } = null;
 
@@ -77,7 +78,7 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void ProcessIntent(Activity activity,Intent intent, bool enableDelayedResponse = true)
+        public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
         {
             DefaultNotificationActivityType = activity.GetType();
 
@@ -119,7 +120,7 @@ namespace Plugin.PushNotification
             _context = context;
 
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
-            if(autoRegistration)
+            if (autoRegistration)
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {
@@ -157,34 +158,32 @@ namespace Plugin.PushNotification
                         editor.Commit();
                     }
 
-
                     CrossPushNotification.Current.RegisterForPushNotifications();
-
-
                 });
             }
 
-
-            if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O && createDefaultNotificationChannel)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O && createDefaultNotificationChannel)
             {
-                // Create channel to show notifications.
-                string channelId = DefaultNotificationChannelId;
-                string channelName = DefaultNotificationChannelName;
-                NotificationManager notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
-
-                notificationManager.CreateNotificationChannel(new NotificationChannel(channelId,
-                    channelName, NotificationImportance.Default));
+                var notificationChannel = new NotificationChannel(DefaultNotificationChannelId, DefaultNotificationChannelName, NotificationImportance.Default);
+                if (DefaultNotificationChannelSound != null)
+                {
+                    int soundResId = Application.Context.Resources.GetIdentifier(DefaultNotificationChannelSound, "raw", Application.Context.PackageName);
+                    Android.Net.Uri soundUri = Android.Net.Uri.Parse($"{ContentResolver.SchemeAndroidResource}://{Application.Context.PackageName}/{soundResId}");
+                    AudioAttributes audioAttributes = new AudioAttributes.Builder().SetUsage(AudioUsageKind.Notification).SetContentType(AudioContentType.Speech).Build();
+                    notificationChannel.SetSound(soundUri, audioAttributes);
+                }
+                NotificationManager notificationManager = (NotificationManager)Application.Context.GetSystemService(Context.NotificationService);
+                notificationManager.CreateNotificationChannel(notificationChannel);
             }
-
 
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
+
         public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
 
-            Initialize(context, resetToken,createDefaultNotificationChannel,autoRegistration);
+            Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
             RegisterUserNotificationCategories(notificationCategories);
-
         }
 
         public async System.Threading.Tasks.Task RegisterForPushNotifications()
@@ -194,7 +193,6 @@ namespace Plugin.PushNotification
                 var token = FirebaseInstanceId.Instance.Token;
                 if (!string.IsNullOrEmpty(token))
                 {
-
                     SaveToken(token);
                 }
             });
@@ -218,8 +216,6 @@ namespace Plugin.PushNotification
             {
                 _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.UnregistrationFailed, ex.ToString()));
             }
-
-
         }
 
         static void CleanUp()
@@ -228,11 +224,10 @@ namespace Plugin.PushNotification
             SaveToken(string.Empty);
         }
 
-
         public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(context, resetToken,createDefaultNotificationChannel,autoRegistration);
+            Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
         }
 
         public static void ClearUserNotificationCategories()
