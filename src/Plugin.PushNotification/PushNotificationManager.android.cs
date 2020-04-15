@@ -41,6 +41,8 @@ namespace Plugin.PushNotification
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
         public static string DefaultNotificationChannelName { get; set; } = "General";
+        public static string DefaultNotificationChannelSound { get; set; } = "default";
+
         public static NotificationImportance DefaultNotificationChannelImportance { get; set; } = NotificationImportance.Default;
         static TaskCompletionSource<string> _tokenTcs;
         internal static Type DefaultNotificationActivityType { get; set; } = null;
@@ -128,31 +130,16 @@ namespace Plugin.PushNotification
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O && createDefaultNotificationChannel)
             {
-                // Create channel to show notifications.
-                var channelId = DefaultNotificationChannelId;
-                var channelName = DefaultNotificationChannelName;
-                var notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
-                var notChannel = new NotificationChannel(channelId,
-                    channelName, DefaultNotificationChannelImportance);
-                
-                if(SoundUri !=null)
+                var notificationChannel = new NotificationChannel(DefaultNotificationChannelId, DefaultNotificationChannelName, NotificationImportance.Default);
+                if (DefaultNotificationChannelSound != null)
                 {
-                    try
-                    {
-                        var soundAttributes = new AudioAttributes.Builder()
-                                             .SetContentType(AudioContentType.Sonification)
-                                             .SetUsage(AudioUsageKind.Notification).Build();
-
-                        notChannel.SetSound(SoundUri, soundAttributes);
-
-                    }catch(Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
-                 
+                    int soundResId = Application.Context.Resources.GetIdentifier(DefaultNotificationChannelSound, "raw", Application.Context.PackageName);
+                    Android.Net.Uri soundUri = Android.Net.Uri.Parse($"{ContentResolver.SchemeAndroidResource}://{Application.Context.PackageName}/{soundResId}");
+                    AudioAttributes audioAttributes = new AudioAttributes.Builder().SetUsage(AudioUsageKind.Notification).SetContentType(AudioContentType.Speech).Build();
+                    notificationChannel.SetSound(soundUri, audioAttributes);
                 }
-               
-                notificationManager.CreateNotificationChannel(notChannel);
+                NotificationManager notificationManager = (NotificationManager)Application.Context.GetSystemService(Context.NotificationService);
+                notificationManager.CreateNotificationChannel(notificationChannel);
             }
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
