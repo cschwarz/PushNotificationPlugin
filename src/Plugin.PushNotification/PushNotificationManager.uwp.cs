@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Xml;
+using Newtonsoft.Json;
 using Windows.Networking.PushNotifications;
 using Windows.Storage;
 using Windows.UI.Notifications;
@@ -128,8 +128,8 @@ namespace Plugin.PushNotification
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
             if (args.NotificationType == PushNotificationType.Raw)
-            {
-                foreach (var pair in JsonSerializer.Deserialize<Dictionary<string, string>>(args.RawNotification.Content))
+            {                
+                foreach (var pair in JsonConvert.DeserializeObject<Dictionary<string, string>>(args.RawNotification.Content))
                     data.Add(pair.Key, pair.Value);
             }
             else if (args.NotificationType == PushNotificationType.Toast)

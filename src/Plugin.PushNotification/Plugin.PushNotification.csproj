@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">$(TargetFrameworks);uap10.0.16299;</TargetFrameworks>
-    <AssemblyName>Plugin.PushNotification</AssemblyName>
+    <AssemblyName>Refactory.Plugin.PushNotification</AssemblyName>
     <RootNamespace>Plugin.PushNotification</RootNamespace>
-    <PackageId>Plugin.PushNotification</PackageId>
+    <PackageId>Refactory.Plugin.PushNotification</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>1.4.0</AssemblyVersion>
-    <AssemblyFileVersion>1.4.0</AssemblyFileVersion>
-    <Version>1.4.0</Version>
+    <AssemblyVersion>4.0.0</AssemblyVersion>
+    <AssemblyFileVersion>4.0.3</AssemblyFileVersion>
+    <Version>4.0.3</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>
@@ -75,7 +75,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('uap10.0')) ">
-    <PackageReference Include="System.Text.Json" Version="4.7.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <Compile Include="**\*.uwp.cs" />
     <Compile Include="**\*.uwp.*.cs" />
     <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
