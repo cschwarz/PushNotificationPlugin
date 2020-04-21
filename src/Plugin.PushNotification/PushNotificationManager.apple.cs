@@ -162,16 +162,10 @@ namespace Plugin.PushNotification
         public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(options, autoRegistration,enableDelayedResponse);
+            Initialize(options, autoRegistration, enableDelayedResponse);
         }
 
-        public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true, bool enableDelayedResponse = true)
-        {
-            Initialize(options, autoRegistration,enableDelayedResponse);
-            RegisterUserNotificationCategories(notificationUserCategories);
-        }
-
-        static void RegisterUserNotificationCategories(NotificationUserCategory[] userCategories)
+        public void RegisterUserNotificationCategories(NotificationUserCategory[] userCategories)
         {
             if (userCategories != null && userCategories.Length > 0)
             {

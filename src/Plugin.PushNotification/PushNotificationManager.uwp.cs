@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using Newtonsoft.Json;
+using Windows.Data.Xml.Dom;
 using Windows.Networking.PushNotifications;
 using Windows.Storage;
 using Windows.UI.Notifications;
@@ -66,13 +66,6 @@ namespace Plugin.PushNotification
             Initialize();
         }
 
-        public static void Initialize(IPushNotificationHandler pushNotificationHandler, NotificationUserCategory[] notificationUserCategories)
-        {
-            CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize();
-            RegisterUserNotificationCategories(notificationUserCategories);
-        }
-
         public void ClearAllNotifications()
         {
             ToastNotificationManager.History.Clear();
@@ -83,8 +76,10 @@ namespace Plugin.PushNotification
             return UserNotificationCategories?.ToArray();
         }
 
-        static void RegisterUserNotificationCategories(NotificationUserCategory[] userCategories)
+        public void RegisterUserNotificationCategories(NotificationUserCategory[] userCategories)
         {
+            UserNotificationCategories.Clear();
+
             foreach (NotificationUserCategory userCategory in userCategories)
                 UserNotificationCategories.Add(userCategory);
         }

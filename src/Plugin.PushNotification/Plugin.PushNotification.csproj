@@ -8,8 +8,8 @@
     <PackageId>Refactory.Plugin.PushNotification</PackageId>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <AssemblyVersion>4.0.0</AssemblyVersion>
-    <AssemblyFileVersion>4.0.3</AssemblyFileVersion>
-    <Version>4.0.3</Version>
+    <AssemblyFileVersion>4.0.5</AssemblyFileVersion>
+    <Version>4.0.5</Version>
     <PackOnBuild>true</PackOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
     <LangVersion>default</LangVersion>

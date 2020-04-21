@@ -171,6 +171,8 @@ namespace Plugin.PushNotification
         /// </summary>
         NotificationUserCategory[] GetUserNotificationCategories();
 
+        void RegisterUserNotificationCategories(NotificationUserCategory[] categories);
+
         /// <summary>
         /// Clear all notifications
         /// </summary>

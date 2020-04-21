@@ -143,11 +143,6 @@ namespace Plugin.PushNotification
             }
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
-        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
-        {
-            Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
-            RegisterUserNotificationCategories(notificationCategories);
-        }
 
         public void RegisterForPushNotifications()
         {
@@ -312,7 +307,8 @@ namespace Plugin.PushNotification
         {
             return userNotificationCategories?.ToArray();
         }
-        public static void RegisterUserNotificationCategories(NotificationUserCategory[] notificationCategories)
+
+        public void RegisterUserNotificationCategories(NotificationUserCategory[] notificationCategories)
         {
             if (notificationCategories != null && notificationCategories.Length > 0)
             {
